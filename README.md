@@ -6,24 +6,24 @@ A production-style, multi-region disaster recovery (DR) architecture you can run
 
 ```mermaid
 flowchart LR
-  subgraph user[User / Demo]
-    U[Browser]
+  subgraph user["User and Demo"]
+    U["Browser"]
   end
 
-  subgraph router[Routing Layer]
-    R[Nginx Router<br/>:8080]
+  subgraph router["Routing Layer"]
+    R["Nginx Router :8080"]
   end
 
-  subgraph regionA[Region A (Primary)]
-    AAPP[App A Container]
-    ALS[LocalStack A<br/>S3, IAM, STS<br/>:4566]
-    AB[(S3 Bucket A)]
+  subgraph regionA["Region A Primary"]
+    AAPP["App A Container"]
+    ALS["LocalStack A :4566 (S3/IAM/STS)"]
+    AB[("S3 Bucket A")]
   end
 
-  subgraph regionB[Region B (DR)]
-    BAPP[App B Container]
-    BLS[LocalStack B<br/>S3, IAM, STS<br/>:4567]
-    BB[(S3 Bucket B)]
+  subgraph regionB["Region B DR"]
+    BAPP["App B Container"]
+    BLS["LocalStack B :4567 (S3/IAM/STS)"]
+    BB[("S3 Bucket B")]
   end
 
   U --> R
@@ -33,7 +33,7 @@ flowchart LR
   BAPP --- BLS
   ALS --> AB
   BLS --> BB
-  AB -. replicate (sync) .-> BB
+  AB -. "replicate sync" .-> BB
 
   classDef primary fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px;
   classDef dr fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
