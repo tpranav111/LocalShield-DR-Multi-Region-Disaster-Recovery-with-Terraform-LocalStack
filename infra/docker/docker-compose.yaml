@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  localstack-a:
+    image: localstack/localstack:latest
+    container_name: localstack-a
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,iam,sts
+      - DEFAULT_REGION=us-east-1
+      - EDGE_PORT=4566
+      - LS_LOG=warn
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./localstack-a}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - dr-net
+
+  localstack-b:
+    image: localstack/localstack:latest
+    container_name: localstack-b
+    ports:
+      - "4567:4566"
+    environment:
+      - SERVICES=s3,iam,sts
+      - DEFAULT_REGION=us-west-2
+      - EDGE_PORT=4566
+      - LS_LOG=warn
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./localstack-b}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - dr-net
+
+  app-a:
+    image: nginx:alpine
+    container_name: app-a
+    volumes:
+      - "./app/index-a.html:/usr/share/nginx/html/index.html:ro"
+    networks:
+      - dr-net
+
+  app-b:
+    image: nginx:alpine
+    container_name: app-b
+    volumes:
+      - "./app/index-b.html:/usr/share/nginx/html/index.html:ro"
+    networks:
+      - dr-net
+
+  router:
+    image: nginx:alpine
+    container_name: dr-router
+    ports:
+      - "8080:80"
+    volumes:
+      - "./router/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "./router/upstream.conf:/etc/nginx/conf.d/upstream.conf"
+    depends_on:
+      - app-a
+      - app-b
+    networks:
+      - dr-net
+
+networks:
+  dr-net:
+    name: dr-net

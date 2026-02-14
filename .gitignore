@@ -1,0 +1,24 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+
+# Local state directory
+infra/state/
+
+# LocalStack volumes
+infra/docker/localstack-a/
+infra/docker/localstack-b/
+
+# Script artifacts
+infra/scripts/tmp/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
